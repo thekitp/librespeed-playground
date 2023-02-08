@@ -1,0 +1,62 @@
+version: '3'
+services:
+  librespeed-speedtest:
+    build:
+      context: ./librespeed-speedtest
+    restart: always
+    environment:
+      - TITLE=my-speedtest-suite
+      - TELEMETRY=true
+      - MODE=standalone
+      - PASSWORD=12341234
+      - ENABLE_ID_OBFUSCATION=true
+      - EMAIL:admin@example.com
+      - DB_TYPE=postgresql
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOSTNAME=db
+      - DB_NAME=librespeed
+      ## API key for ipinfo.io. Optional, but required if you expect to serve a large number of tests
+      # - IPINFO_APIKEY
+    networks:
+      - dbconn
+    ports:
+      - 41800:80
+  database:
+    image: postgres:15.1-bullseye
+    restart: always
+    networks:
+      dbconn:
+        aliases:
+          - "db"
+    volumes:
+      - librespeed-speedtest-storage:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=librespeed
+      - POSTGRES_PASSWORD=postgres
+
+  create-database:
+    image: postgres:15.1-bullseye
+    profiles:
+      - utils
+    command: psql postgresql://postgres:postgres@db:5432/librespeed -f /telemetry_postgresql.sql
+    volumes:
+      - ./librespeed-speedtest/results/telemetry_postgresql.sql:/telemetry_postgresql.sql
+    networks:
+      - dbconn
+
+  database-admin-ui:
+    image: adminer
+    restart: always
+    networks:
+      - dbconn
+    ports:
+      - 41801:8080
+
+volumes:
+  librespeed-speedtest-storage:
+    external: true
+
+networks:
+  dbconn:
+    external: false
