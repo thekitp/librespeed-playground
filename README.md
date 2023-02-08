@@ -21,7 +21,7 @@ docker-compose build
 
 ## 4. Start service
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 ## 5. Create database
