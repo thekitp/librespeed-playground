@@ -1,0 +1,17 @@
+diff --git a/results/telemetry_postgresql.sql b/results/telemetry_postgresql.sql
+index e28e8ef..6dbb8a3 100755
+--- a/results/telemetry_postgresql.sql
++++ b/results/telemetry_postgresql.sql
+@@ -107,6 +107,12 @@ ALTER TABLE ONLY speedtest_users
+     ADD CONSTRAINT speedtest_users_pkey PRIMARY KEY (id);
+ 
+ 
++--
++-- Set recored timezone to Asia/Bangkok
++--
++ALTER TABLE speedtest_users ALTER COLUMN "timestamp" SET DEFAULT (current_timestamp AT TIME ZONE 'Asia/Bangkok');
++
++
+ --
+ -- PostgreSQL database dump complete
+ --
